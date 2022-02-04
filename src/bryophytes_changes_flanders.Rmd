@@ -72,9 +72,7 @@ Explanation of variables:
 glimpse(taxon_names)
 ```
 
-# Model fitting
-
-## Model description
+# Model description
 
 The method assumes that during the two survey periods ($s1$ and $s2$), recorders attempted to observe as many species as possible in each grid cell.
 The surveyors in both periods looked for liverworts and mosses and we, therefore, did not consider survey effort to differ between both phyla.
@@ -133,9 +131,9 @@ This transformation is not necessary for the response variable because the zero-
 A Bayesian hierarchical modeling procedure was used to calculate the posterior distribution for the parameters of the model [@R-brms; @brms2017; @brms2018] and we assumed non-informative priors.
 The `brms` package is an interface to the `Stan` programming language for statistical computation [@stan2021].
 
-## Full model
+# Model selection
 
-Run the full model:
+First we run the full model.
 
 ```{r full-model}
 options(contrasts = c('contr.sum', 'contr.poly'))
@@ -171,7 +169,6 @@ full_model_zib <- brm(bf(n_hok_2000_2019 | trials(n_hok_tot_2000_2019)
                   cores = 4)
 ```
 
-## Model selection
 
 We focused model selection on the Ellenberg terms only.
 All other effects were kept in the model.
@@ -251,7 +248,7 @@ loo1$diffs %>%
         digits = 2)
 ```
 
-## Model validation
+# Model validation
 
 Figure \@ref(fig:pp-check) shows that overall the model is able to generate the observed data.
 There is some evidence that the model is not able to generate the high observed frequency of Bryophyta which were counted in only one or two grid squares.
@@ -261,7 +258,7 @@ pp_check(model_zib_2, type = "bars_grouped", ndraws = 100, group = "phylum",
          facet_args = list(ncol = 1))
 ```
 
-## Model summary of best predictive model
+# Model summary of best predictive model
 
 ```{r summary}
 broom.mixed::tidy(model_zib_2) %>%
