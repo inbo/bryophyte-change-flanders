@@ -1,0 +1,12 @@
+description: Configuration file for checklist::check_pkg()
+package: no
+allowed:
+  warnings:
+  - motivation: '"name of Rproj best matches name of git repo"'
+    value: |-
+      Use `_` as separator in the basename of non-graphics files.
+        File: `bryophyte-change-flanders.Rproj`
+  notes: []
+citation_roles:
+- aut
+- cre
