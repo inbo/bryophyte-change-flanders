@@ -56,17 +56,17 @@ Explanation of variables:
 
 -   `phylum`: Character vector indicating to which phylum the species belongs.
 -   `taxon_id_parent`: Numeric identifier of a species. Can be used to join the table to `taxon_names` (join on `taxon_names$id`)
--   `n_hok_1980_1999`: Number of occupied 16 km² squares in period 1980 - 1999.
--   `n_hok_2000_2019`: Number of occupied 16 km² squares in period 2000 - 2019.
--   `n_hok_tot_1980_1999`: Total number of eligible 16 km² squares in period 1980 - 1999.
--   `n_hok_tot_2000_2019`: Total number of eligible 16 km² squares in period 2000 - 2019.
+-   `n_square_1980_1999`: Number of occupied 16 km² squares in period 1980 - 1999.
+-   `n_square_2000_2019`: Number of occupied 16 km² squares in period 2000 - 2019.
+-   `n_square_tot_1980_1999`: Total number of eligible 16 km² squares in period 1980 - 1999.
+-   `n_square_tot_2000_2019`: Total number of eligible 16 km² squares in period 2000 - 2019.
 -   `ell_l`: Ellenberg values for light.
 -   `ell_n`: Ellenberg values for nitrogen.
 -   `ell_f`: Ellenberg values for moisture.
 -   `ell_r`: Ellenberg values for reaction number.
 -   `ell_t`: Ellenberg values for temperature.
 -   `substrate`: Character vector indicating the substrate(s) where the species lives upon.
--   `wei`: Weights used in the analysis to downweight species which have occur on more than one substrate.
+-   `weight`: Weights used in the analysis to downweight species which have occur on more than one substrate.
 
 ```{r glimpse-taxa}
 glimpse(taxon_names)
@@ -135,11 +135,12 @@ The `brms` package is an interface to the `Stan` programming language for statis
 
 First we run the full model.
 
-```{r full-model}
+```{r full-model, message=FALSE, warning=FALSE}
 options(contrasts = c("contr.sum", "contr.poly"))
-full_model_zib <- brm(bf(n_hok_2000_2019 | trials(n_hok_tot_2000_2019)
-                         + weights(wei) ~
-                    qlogis((n_hok_1980_1999 + 0.5) / (n_hok_tot_1980_1999 + 1))
+full_model_zib <- brm(bf(n_square_2000_2019 | trials(n_square_tot_2000_2019)
+                         + weights(weight) ~
+                    qlogis((n_square_1980_1999 + 0.5) /
+                             (n_square_tot_1980_1999 + 1))
                   + ell_l
                   + ell_n
                   + ell_f
@@ -149,8 +150,8 @@ full_model_zib <- brm(bf(n_hok_2000_2019 | trials(n_hok_tot_2000_2019)
                   + ell_f:phylum
                   + ell_t:phylum
                   + (1 + phylum || substrate),
-                  zi ~   qlogis((n_hok_1980_1999 + 0.5) /
-                                  (n_hok_tot_1980_1999 + 1))
+                  zi ~   qlogis((n_square_1980_1999 + 0.5) /
+                                  (n_square_tot_1980_1999 + 1))
                   + ell_l
                   + ell_n
                   + ell_f
@@ -179,11 +180,11 @@ The simplest model with the highest predictive accuracy based on leave-one-out c
 This resulted in all Ellenberg terms being removed from the zero-inflated part of the model.
 All terms were kept in the binomial part of the model.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 model_zib_1 <- update(
   full_model_zib,
-  bf(n_hok_2000_2019 | trials(n_hok_tot_2000_2019) + weights(wei) ~
-       qlogis((n_hok_1980_1999 + 0.5) / (n_hok_tot_1980_1999 + 1))
+  bf(n_square_2000_2019 | trials(n_square_tot_2000_2019) + weights(weight) ~
+       qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
      + ell_l
      + ell_n
      + ell_f
@@ -193,7 +194,7 @@ model_zib_1 <- update(
      + ell_f:phylum
      + ell_t:phylum
      + (1 + phylum || substrate),
-     zi ~        qlogis((n_hok_1980_1999 + 0.5) / (n_hok_tot_1980_1999 + 1))
+     zi ~ qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
      + ell_l
      + ell_n
      + ell_f
@@ -207,8 +208,8 @@ model_zib_1 <- update(
 
 model_zib_2 <- update(
   model_zib_1,
-  bf(n_hok_2000_2019 | trials(n_hok_tot_2000_2019) + weights(wei) ~
-       qlogis((n_hok_1980_1999 + 0.5) / (n_hok_tot_1980_1999 + 1))
+  bf(n_square_2000_2019 | trials(n_square_tot_2000_2019) + weights(weight) ~
+       qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
      + ell_l
      + ell_n
      + ell_f
@@ -219,7 +220,7 @@ model_zib_2 <- update(
      + ell_t:phylum
      + (1 + phylum || substrate),
      zi ~
-       qlogis((n_hok_1980_1999 + 0.5) / (n_hok_tot_1980_1999 + 1))
+       qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
      + (1 + phylum || substrate))
   , file = "model_zib_2"
   , file_refit = "on_change"
@@ -329,45 +330,45 @@ create_conditions <- function(x, vars, ...) {
 ```{r conditions}
 conditions0 <- create_conditions(
   x = model_zib_2,
-  vars = c("n_hok_1980_1999", "ell_f", "ell_n", "ell_l", "ell_t")) %>%
+  vars = c("n_square_1980_1999", "ell_f", "ell_n", "ell_l", "ell_t")) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 conditions1 <- create_conditions(
   x = model_zib_2,
   vars = c("ell_f", "ell_n", "ell_l", "ell_t")
   ) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 conditions2 <- create_conditions(
   x = model_zib_2,
-  vars = c("n_hok_1980_1999", "ell_f", "ell_l", "ell_t")
+  vars = c("n_square_1980_1999", "ell_f", "ell_l", "ell_t")
 ) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 
 conditions3 <- create_conditions(
   x = model_zib_2,
-  vars = c("n_hok_1980_1999", "ell_n", "ell_l", "ell_t")
+  vars = c("n_square_1980_1999", "ell_n", "ell_l", "ell_t")
 ) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 conditions4 <- create_conditions(
   x = model_zib_2,
-  vars = c("n_hok_1980_1999", "ell_n", "ell_f", "ell_t")
+  vars = c("n_square_1980_1999", "ell_n", "ell_f", "ell_t")
 ) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 conditions5 <- create_conditions(
   x = model_zib_2,
-  vars = c("n_hok_1980_1999", "ell_n", "ell_f", "ell_l")
+  vars = c("n_square_1980_1999", "ell_n", "ell_f", "ell_l")
 ) %>%
   mutate(phylum = NA,
-         n_hok_tot_2000_2019 = 227)
+         n_square_tot_2000_2019 = 227)
 
 ```
 
@@ -383,8 +384,8 @@ pep0 <- posterior_epred(model_zib_2,
                         re_formula = NA,
                         newdata = conditions0 %>%
                           mutate(substrate = NA,
-                                 n_hok_tot_2000_2019 = 227,
-                                 n_hok_tot_1980_1999 = 227
+                                 n_square_tot_2000_2019 = 227,
+                                 n_square_tot_1980_1999 = 227
                           ))
 
 pep0_conditions0 <- conditions0 %>%
@@ -393,19 +394,19 @@ pep0_conditions0 <- conditions0 %>%
          upper__  = quantile(pep0, probs = 0.975))
 
 p1 <- conditional_effects(model_zib_2,
-                    effects = "n_hok_1980_1999",
+                    effects = "n_square_1980_1999",
                     conditions = conditions1)
 
 p1 <- plot(p1, plot = FALSE, points = FALSE)[[1]] +
   geom_point(data = model_zib_2$data,
-             aes(x = n_hok_1980_1999 + 0.5,
-                 y = n_hok_2000_2019,
+             aes(x = n_square_1980_1999 + 0.5,
+                 y = n_square_2000_2019,
                  colour = phylum),
              alpha = 0.3,
              inherit.aes = FALSE) +
   geom_abline() +
   geom_pointrange(data = pep0_conditions0,
-                  aes(x = n_hok_1980_1999,
+                  aes(x = n_square_1980_1999,
                       y = estimate__,
                       ymin = lower__,
                       ymax = upper__),

@@ -1,4 +1,4 @@
-phylum,taxon_id_parent,n_hok_1980_1999,n_hok_2000_2019,n_hok_tot_1980_1999,n_hok_tot_2000_2019,ell_l,ell_n,ell_f,ell_r,ell_t,substrate,wei
+phylum,taxon_id_parent,n_square_1980_1999,n_square_2000_2019,n_square_tot_1980_1999,n_square_tot_2000_2019,ell_l,ell_n,ell_f,ell_r,ell_t,substrate,weight
 Bryophyta,42,21,15,227,227,1,4,6,7,6,"rock, hard",0.3333333333333333
 Bryophyta,42,21,15,227,227,1,4,6,7,6,"rock, soft",0.3333333333333333
 Bryophyta,42,21,15,227,227,1,4,6,7,6,artificial stone,0.3333333333333333
