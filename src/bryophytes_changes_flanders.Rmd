@@ -139,7 +139,8 @@ First we run the full model.
 options(contrasts = c("contr.sum", "contr.poly"))
 full_model_zib <- brm(bf(n_square_2000_2019 | trials(n_square_tot_2000_2019)
                          + weights(weight) ~
-                    qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
+                    qlogis((n_square_1980_1999 + 0.5) /
+                             (n_square_tot_1980_1999 + 1))
                   + ell_l
                   + ell_n
                   + ell_f
@@ -193,7 +194,7 @@ model_zib_1 <- update(
      + ell_f:phylum
      + ell_t:phylum
      + (1 + phylum || substrate),
-     zi ~        qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
+     zi ~ qlogis((n_square_1980_1999 + 0.5) / (n_square_tot_1980_1999 + 1))
      + ell_l
      + ell_n
      + ell_f
