@@ -315,8 +315,7 @@ create_conditions <- function(x, vars, ...) {
         tmp <- get(v, x)
         if (brms:::is_like_factor(tmp)) {
             tmp <- levels(as.factor(tmp))
-        }
-        else {
+        } else {
             tmp <- mean(tmp, na.rm = TRUE)
         }
         out[[v]] <- tmp
@@ -429,9 +428,9 @@ p2 <- plot(p2, plot = FALSE, points = FALSE)[[1]] +
                 mutate(estimate__ = dt(estimate__)),
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
- scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg nitrogen values") +
   theme(legend.position = "none")
@@ -453,8 +452,8 @@ p3 <- plot(p3, plot = FALSE, points = FALSE)[[1]] +
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
   scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg moisture values") +
   theme(legend.position = "none")
@@ -493,9 +492,9 @@ p5 <- plot(p5, plot = FALSE, points = FALSE)[[1]] +
                 mutate(estimate__ = dt(estimate__)),
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
- scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg light values") +
   theme(legend.position = "none")
@@ -512,8 +511,8 @@ p6 <- plot(p6, plot = FALSE, points = FALSE)[[1]] +
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
  scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg temperature values") +
   theme(legend.position = "none")
