@@ -260,6 +260,33 @@ pp_check(model_zib_2, type = "bars_grouped", ndraws = 100, group = "phylum",
          facet_args = list(ncol = 1))
 ```
 
+We also derive and save a table containing the raw residuals:
+
+```{r residuals}
+raw_residuals <- bind_cols(bryophyte_data, residuals(model_zib_2)) %>%
+  left_join(taxon_names %>% select(id, scientific_name),
+            by = c("taxon_id_parent" = "id")) %>%
+  relocate(scientific_name, .before = taxon_id_parent) %>%
+  rename(raw_residual = Estimate,
+         raw_residual_se = Est.Error,
+         raw_residual_q2.5 = Q2.5,
+         raw_residual_q97.5 = Q97.5) %>%
+  bind_cols(
+    residuals(model_zib_2, re_formula = NA) %>%
+      as_tibble() %>%
+      rename(raw_residual_fixedonly = Estimate,
+         raw_residual_fixedonly_se = Est.Error,
+         raw_residual_fixedonly_q2.5 = Q2.5,
+         raw_residual_fixedonly_q97.5 = Q97.5))
+```
+
+
+```{r save-residuals, eval=!file.exists(here("data", "model_raw_residuals.csv"))}
+write_csv(raw_residuals,
+          file = here("data", "model_raw_residuals.csv"))
+```
+
+
 # Model summary of best predictive model
 
 ```{r summary}
@@ -288,8 +315,7 @@ create_conditions <- function(x, vars, ...) {
         tmp <- get(v, x)
         if (brms:::is_like_factor(tmp)) {
             tmp <- levels(as.factor(tmp))
-        }
-        else {
+        } else {
             tmp <- mean(tmp, na.rm = TRUE)
         }
         out[[v]] <- tmp
@@ -402,9 +428,9 @@ p2 <- plot(p2, plot = FALSE, points = FALSE)[[1]] +
                 mutate(estimate__ = dt(estimate__)),
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
- scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg nitrogen values") +
   theme(legend.position = "none")
@@ -426,8 +452,8 @@ p3 <- plot(p3, plot = FALSE, points = FALSE)[[1]] +
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
   scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg moisture values") +
   theme(legend.position = "none")
@@ -466,9 +492,9 @@ p5 <- plot(p5, plot = FALSE, points = FALSE)[[1]] +
                 mutate(estimate__ = dt(estimate__)),
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
- scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg light values") +
   theme(legend.position = "none")
@@ -485,8 +511,8 @@ p6 <- plot(p6, plot = FALSE, points = FALSE)[[1]] +
              aes(yintercept = estimate__),
              inherit.aes = FALSE) +
  scale_x_continuous(
-    breaks = function(x)
-      unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))) +
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+    ) +
   labs(y = "Change in number of\noccupied grid cells",
        x = "Ellenberg temperature values") +
   theme(legend.position = "none")
