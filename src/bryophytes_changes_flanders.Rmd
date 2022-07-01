@@ -260,6 +260,33 @@ pp_check(model_zib_2, type = "bars_grouped", ndraws = 100, group = "phylum",
          facet_args = list(ncol = 1))
 ```
 
+We also derive and save a table containing the raw residuals:
+
+```{r residuals}
+raw_residuals <- bind_cols(bryophyte_data, residuals(model_zib_2)) %>%
+  left_join(taxon_names %>% select(id, scientific_name),
+            by = c("taxon_id_parent" = "id")) %>%
+  relocate(scientific_name, .before = taxon_id_parent) %>%
+  rename(raw_residual = Estimate,
+         raw_residual_se = Est.Error,
+         raw_residual_q2.5 = Q2.5,
+         raw_residual_q97.5 = Q97.5) %>%
+  bind_cols(
+    residuals(model_zib_2, re_formula = NA) %>%
+      as_tibble() %>%
+      rename(raw_residual_fixedonly = Estimate,
+         raw_residual_fixedonly_se = Est.Error,
+         raw_residual_fixedonly_q2.5 = Q2.5,
+         raw_residual_fixedonly_q97.5 = Q97.5))
+```
+
+
+```{r save-residuals, eval=!file.exists(here("data", "model_raw_residuals.csv"))}
+write_csv(raw_residuals,
+          file = here("data", "model_raw_residuals.csv"))
+```
+
+
 # Model summary of best predictive model
 
 ```{r summary}
