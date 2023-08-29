@@ -41,3 +41,5 @@ vignettes/*.pdf
 # rds and html files in output
 output/*.rds
 output/*.html
+*.html
+*_files/
