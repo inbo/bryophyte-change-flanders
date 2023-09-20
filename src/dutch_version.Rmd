@@ -129,7 +129,12 @@ p1 <- conditional_effects(model_zib_2,
                           conditions = conditions1)
 
 p1 <- plot(p1, plot = FALSE, points = FALSE)[[1]] +
-  geom_point(data = model_zib_2$data,
+  geom_point(data = model_zib_2$data %>%
+               mutate(
+                 phylum = case_match(
+                   phylum,
+                   "Marchantiophyta" ~ "Levermossen",
+                   "Bryophyta" ~ "Bladmossen")),
              aes(x = n_square_1980_1999 + 0.5,
                  y = n_square_2000_2019,
                  colour = phylum),
@@ -202,16 +207,16 @@ p4 <- p4$`substrate:phylum` %>%
   mutate(substrate = case_match(
            substrate,
            "artificial stone" ~ "steenslag",
-           "bryophyte" ~ "andere mossen",
+           "bryophyte" ~ "andere\nmossen",
            "decaying vegetation" ~ "strooisel",
-           "decorticated wood" ~ "ontschorst hout",
-           "epiphytic on living wood" ~ "epifytisch op levend hout",
-           "gravel or sand" ~ "grind of zand",
-           "mineral soil" ~ "minerale bodem",
+           "decorticated wood" ~ "ontschorst\nhout",
+           "epiphytic on living wood" ~ "epifytisch op\nlevend hout",
+           "gravel or sand" ~ "grind of\nzand",
+           "mineral soil" ~ "minerale\nbodem",
            "peat" ~ "veen",
-           "rock, hard" ~ "hard gesteente",
-           "rock, soft" ~ "zacht gesteente",
-           "soil on rock" ~ "bodem op gesteente"
+           "rock, hard" ~ "hard\ngesteente",
+           "rock, soft" ~ "zacht\ngesteente",
+           "soil on rock" ~ "bodem op\ngesteente"
          ),
          substrate = reorder(substrate, estimate__)
          ) %>%
@@ -265,8 +270,11 @@ p6 <- plot(p6, plot = FALSE, points = FALSE)[[1]] +
        x = "Ellenberg temperatuurgetal") +
   theme(legend.position = "none")
 
+p1 <- p1 + theme(legend.position = "none")
 
-p1 + p4 + p2 + p3 + p5 + p6 +
+
+wrap_elements(plot = p1) +
+  p4 + p2 + p3 + p5 + p6 +
   plot_layout(guides = "collect",
               ncol = 2,
               widths = c(1.1, 1)) +
@@ -275,7 +283,7 @@ p1 + p4 + p2 + p3 + p5 + p6 +
 ```
 
 ```{r}
-p1
+p1 + theme(legend.position = "top")
 p2
 p3
 p4
